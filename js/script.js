@@ -245,32 +245,16 @@ class CineBoxAdapted {
     }
 
     navigateToPage(page) {
-        // Update navigation
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.classList.remove('active');
-        });
+        // Hide all pages
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         
-        // Adicionar active apenas se o elemento existir na navegação
-        const navLink = document.querySelector(`[data-page="${page}"]`);
-        if (navLink) {
-            navLink.classList.add('active');
+        // Show selected page
+        const targetPage = document.getElementById(page + 'Page');
+        if (targetPage) {
+            targetPage.classList.add('active');
+            this.currentPage = page;
         }
-
-        // Update pages
-        document.querySelectorAll('.page').forEach(p => {
-            p.classList.remove('active');
-        });
         
-        const pageElement = document.getElementById(`${page}Page`);
-        if (pageElement) {
-            pageElement.classList.add('active');
-        } else {
-            console.warn(`Página ${page}Page não encontrada`);
-            return;
-        }
-
-        this.currentPage = page;
-
         // Load page content
         switch(page) {
             case 'home':
@@ -285,9 +269,6 @@ class CineBoxAdapted {
             case 'favorites':
                 this.loadFavoritesPage();
                 break;
-            case 'profile':
-                this.loadProfilePage();
-                break;
         }
     }
 
@@ -297,6 +278,9 @@ class CineBoxAdapted {
         if (featuredMovie) {
             this.setHeroMovie(featuredMovie);
         }
+
+        // Load continue watching FIRST
+        this.loadContinueWatching();
 
         // Load carousels
         // Em Alta Hoje - Priorizar filmes NOVOS (isNew=true)
@@ -308,9 +292,6 @@ class CineBoxAdapted {
         this.loadCarousel('trendingList', trendingMovies);
         this.loadCarousel('actionList', this.movies.filter(m => m.category === 'action' || m.genre === 'action').slice(0, 10));
         this.loadCarousel('comedyList', this.movies.filter(m => m.category === 'comedy' || m.genre === 'comedy').slice(0, 10));
-        
-        // Load continue watching if available
-        this.loadContinueWatching();
     }
 
     setHeroMovie(movie) {
@@ -323,7 +304,8 @@ class CineBoxAdapted {
         document.getElementById('heroRating').textContent = `★ ${movie.rating || '8.0'}`;
         
         const heroImage = document.getElementById('heroImage');
-        heroImage.src = movie.poster;
+        // Usar backdrop se existir, senão usar poster
+        heroImage.src = movie.backdrop || movie.poster;
         heroImage.alt = movie.title;
         
         // Update add to list button
@@ -474,7 +456,7 @@ class CineBoxAdapted {
         
         if (continueWatchingMovies.length > 0) {
             section.style.display = 'block';
-            this.renderContinueWatching('continueList', continueWatchingMovies);
+            this.renderContinueWatching('continueWatchingList', continueWatchingMovies);
         } else {
             section.style.display = 'none';
         }
@@ -750,6 +732,55 @@ class CineBoxAdapted {
         setTimeout(() => {
             toast.classList.remove('show');
         }, 3000);
+    }
+
+    // Sincronizar progresso entre dispositivos
+    async syncWatchProgress() {
+        try {
+            const user = localStorage.getItem('cinebox_user');
+            if (!user || typeof db === 'undefined') return;
+
+            const userData = JSON.parse(user);
+            const userId = userData.email;
+
+            // Salvar progresso local no Firestore
+            await db.collection('userProgress').doc(userId).set({
+                watchProgress: this.watchProgress,
+                lastSync: new Date().toISOString()
+            }, { merge: true });
+
+            console.log('✅ Progresso sincronizado com Firestore');
+
+        } catch (error) {
+            console.log('⚠️ Erro ao sincronizar progresso:', error);
+        }
+    }
+
+    // Carregar progresso do Firestore ao fazer login
+    async loadWatchProgressFromFirestore() {
+        try {
+            const user = localStorage.getItem('cinebox_user');
+            if (!user || typeof db === 'undefined') return;
+
+            const userData = JSON.parse(user);
+            const userId = userData.email;
+
+            const doc = await db.collection('userProgress').doc(userId).get();
+            
+            if (doc.exists) {
+                const data = doc.data();
+                // Mesclar com progresso local (manter o mais recente)
+                this.watchProgress = { ...this.watchProgress, ...data.watchProgress };
+                localStorage.setItem('cinebox_progress', JSON.stringify(this.watchProgress));
+                console.log('✅ Progresso carregado do Firestore');
+                
+                // Recarregar seção continuar assistindo
+                this.loadContinueWatching();
+            }
+
+        } catch (error) {
+            console.log('⚠️ Erro ao carregar progresso:', error);
+        }
     }
 }
 
