@@ -85,8 +85,15 @@ class CineBoxAdapted {
                     
                     console.log(`✅ ${firestoreMovies.length} filmes do Admin Panel carregados!`);
                     
-                    // Adicionar aos filmes do data.js
-                    this.movies = [...this.movies, ...firestoreMovies];
+                    // Separar filmes NOVOS (isNew=true) para aparecer em destaque
+                    const newMovies = firestoreMovies.filter(m => m.isNew);
+                    const normalMovies = firestoreMovies.filter(m => !m.isNew);
+                    
+                    // Adicionar filmes NOVOS no início (destaque)
+                    // Depois adicionar filmes normais
+                    this.movies = [...newMovies, ...this.movies, ...normalMovies];
+                    
+                    console.log(`🆕 ${newMovies.length} filmes NOVOS em destaque!`);
                     
                     // Recarregar carrosséis para mostrar os novos filmes
                     setTimeout(() => {
@@ -292,9 +299,15 @@ class CineBoxAdapted {
         }
 
         // Load carousels
-        this.loadCarousel('trendingList', this.movies.slice(0, 10));
-        this.loadCarousel('actionList', this.movies.filter(m => m.genre === 'action').slice(0, 10));
-        this.loadCarousel('comedyList', this.movies.filter(m => m.genre === 'comedy').slice(0, 10));
+        // Em Alta Hoje - Priorizar filmes NOVOS (isNew=true)
+        const trendingMovies = [
+            ...this.movies.filter(m => m.isNew),
+            ...this.movies.filter(m => !m.isNew)
+        ].slice(0, 10);
+        
+        this.loadCarousel('trendingList', trendingMovies);
+        this.loadCarousel('actionList', this.movies.filter(m => m.category === 'action' || m.genre === 'action').slice(0, 10));
+        this.loadCarousel('comedyList', this.movies.filter(m => m.category === 'comedy' || m.genre === 'comedy').slice(0, 10));
         
         // Load continue watching if available
         this.loadContinueWatching();
