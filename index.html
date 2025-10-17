@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineBox - Streaming Premium</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/auth-styles.css">
+    <link rel="stylesheet" href="css/advanced-styles.css">
+    <link rel="stylesheet" href="css/animations.css">
+    
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#e50914">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="nav-left">
+                <div class="logo">
+                    <span class="logo-text">CINE BOX</span>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="#" class="nav-link active" data-page="home">Início</a></li>
+                    <li><a href="#" class="nav-link" data-page="movies">Filmes</a></li>
+                    <li><a href="#" class="nav-link" data-page="series">Séries</a></li>
+                    <li><a href="#" class="nav-link" data-page="favorites">Minha Lista</a></li>
+                </ul>
+            </div>
+            
+            <div class="nav-right">
+                <div class="search-container">
+                    <input type="text" class="search-input" placeholder="Buscar filmes..." id="searchInput">
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+                
+                <div class="user-menu">
+                    <img src="https://i.pravatar.cc/40" alt="Perfil" class="user-avatar" id="userAvatar">
+                    <div class="dropdown-menu" id="userDropdown">
+                        <a href="#" class="dropdown-item" onclick="if(typeof cineboxAdapted !== 'undefined') cineboxAdapted.navigateToPage('profile'); return false;">
+                            <i class="fas fa-user"></i> Perfil
+                        </a>
+                        <a href="#" class="dropdown-item" onclick="if(typeof cineboxAdapted !== 'undefined') cineboxAdapted.navigateToPage('favorites'); return false;">
+                            <i class="fas fa-heart"></i> Minha Lista
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt"></i> Sair
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mobile-menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+        </nav>
+    </header>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        
+        <!-- Home Page -->
+        <div class="page active" id="homePage">
+            <!-- Hero Section -->
+            <section class="hero" id="heroSection">
+                <div class="hero-backdrop">
+                    <img src="" alt="" class="hero-image" id="heroImage">
+                    <div class="hero-gradient"></div>
+                </div>
+                
+                <div class="hero-content">
+                    <h1 class="hero-title" id="heroTitle">Carregando...</h1>
+                    <p class="hero-description" id="heroDescription"></p>
+                    
+                    <div class="hero-info">
+                        <span class="hero-year" id="heroYear"></span>
+                        <span class="hero-duration" id="heroDuration"></span>
+                        <span class="hero-rating" id="heroRating"></span>
+                    </div>
+                    
+                    <div class="hero-actions">
+                        <button class="btn btn-primary btn-large" id="playHeroBtn">
+                            <i class="fas fa-play"></i> Assistir Agora
+                        </button>
+                        <button class="btn btn-secondary btn-large" id="addToListBtn">
+                            <i class="fas fa-plus"></i> Minha Lista
+                        </button>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Movie Sections -->
+            <div class="sections-container">
+                <!-- Tendências -->
+                <section class="movie-section">
+                    <h2 class="section-title">Em Alta Hoje</h2>
+                    <div class="movie-carousel" id="trendingMovies">
+                        <button class="carousel-btn prev" id="trendingPrev">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <div class="movie-list" id="trendingList">
+                            <!-- Movies will be loaded here -->
+                        </div>
+                        <button class="carousel-btn next" id="trendingNext">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </section>
+                
+                <!-- Ação -->
+                <section class="movie-section">
+                    <h2 class="section-title">Filmes de Ação</h2>
+                    <div class="movie-carousel" id="actionMovies">
+                        <button class="carousel-btn prev" id="actionPrev">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <div class="movie-list" id="actionList">
+                            <!-- Movies will be loaded here -->
+                        </div>
+                        <button class="carousel-btn next" id="actionNext">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </section>
+                
+                <!-- Comédia -->
+                <section class="movie-section">
+                    <h2 class="section-title">Comédias</h2>
+                    <div class="movie-carousel" id="comedyMovies">
+                        <button class="carousel-btn prev" id="comedyPrev">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <div class="movie-list" id="comedyList">
+                            <!-- Movies will be loaded here -->
+                        </div>
+                        <button class="carousel-btn next" id="comedyNext">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </section>
+                
+                <!-- Continue Assistindo -->
+                <section class="movie-section" id="continueWatchingSection" style="display: none;">
+                    <h2 class="section-title">Continue Assistindo</h2>
+                    <div class="movie-carousel" id="continueWatching">
+                        <div class="movie-list" id="continueList">
+                            <!-- Continue watching will be loaded here -->
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+        
+        <!-- Movies Page -->
+        <div class="page" id="moviesPage">
+            <div class="page-header">
+                <h1 class="page-title">Todos os Filmes</h1>
+                <div class="filter-controls">
+                    <select id="genreFilter" class="filter-select">
+                        <option value="">Todos os Gêneros</option>
+                        <option value="action">Ação</option>
+                        <option value="comedy">Comédia</option>
+                        <option value="drama">Drama</option>
+                        <option value="horror">Terror</option>
+                        <option value="romance">Romance</option>
+                        <option value="scifi">Ficção Científica</option>
+                    </select>
+                    <select id="yearFilter" class="filter-select">
+                        <option value="">Todos os Anos</option>
+                        <option value="2024">2024</option>
+                        <option value="2023">2023</option>
+                        <option value="2022">2022</option>
+                        <option value="2021">2021</option>
+                    </select>
+                </div>
+            </div>
+            <div class="movies-grid" id="allMoviesGrid">
+                <!-- All movies will be loaded here -->
+            </div>
+        </div>
+        
+        <!-- Series Page -->
+        <div class="page" id="seriesPage">
+            <div class="page-header">
+                <h1 class="page-title">Séries</h1>
+            </div>
+            <div class="movies-grid" id="seriesGrid">
+                <!-- Series will be loaded here -->
+            </div>
+        </div>
+        
+        <!-- Favorites Page -->
+        <div class="page" id="favoritesPage">
+            <div class="page-header">
+                <h1 class="page-title">Minha Lista</h1>
+                <p class="page-subtitle">Seus filmes e séries favoritos</p>
+            </div>
+            <div class="empty-state" id="emptyFavorites" style="display: none;">
+                <i class="fas fa-heart empty-icon"></i>
+                <h3>Sua lista está vazia</h3>
+                <p>Adicione filmes e séries aos seus favoritos para vê-los aqui</p>
+                <button class="btn btn-primary" onclick="cineboxAdapted.navigateToPage('movies')">
+                    Explorar Filmes
+                </button>
+            </div>
+            <div class="movies-grid" id="favoritesGrid">
+                <!-- Favorites will be loaded here -->
+            </div>
+        </div>
+        
+        <!-- Profile Page -->
+        <div class="page" id="profilePage">
+            <div class="profile-container">
+                <div class="profile-header">
+                    <div class="profile-avatar">
+                        <img src="https://i.pravatar.cc/120" alt="Profile" id="profileImage">
+                        <button class="edit-avatar-btn">
+                            <i class="fas fa-camera"></i>
+                        </button>
+                    </div>
+                    <div class="profile-info">
+                        <h2 id="profileName">Usuário CineBox</h2>
+                        <p id="profileEmail">usuario@cinebox.com</p>
+                        <p class="profile-since">Membro desde Janeiro 2024</p>
+                    </div>
+                </div>
+                
+                <div class="profile-stats">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalWatched">0</div>
+                        <div class="stat-label">Filmes Assistidos</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalSeries">0</div>
+                        <div class="stat-label">Séries Assistidas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalFavorites">0</div>
+                        <div class="stat-label">Favoritos</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalHours">0h</div>
+                        <div class="stat-label">Tempo Assistido</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </main>
+    
+    <!-- Movie Player Modal -->
+    <div class="player-modal" id="playerModal">
+        <div class="player-container">
+            <button class="close-player" id="closePlayer">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div class="player-content">
+                <iframe id="moviePlayer" frameborder="0" allowfullscreen></iframe>
+            </div>
+            
+            <div class="player-info">
+                <h3 id="playerTitle">Título do Filme</h3>
+                <div class="player-meta">
+                    <span id="playerYear">2024</span>
+                    <span id="playerDuration">2h 30min</span>
+                    <span id="playerRating">★ 8.5</span>
+                </div>
+                <p id="playerDescription">Descrição do filme...</p>
+                
+                <div class="player-actions">
+                    <button class="btn btn-secondary" id="addToFavoritesBtn">
+                        <i class="fas fa-heart"></i> Adicionar aos Favoritos
+                    </button>
+                    <button class="btn btn-secondary" id="shareMovieBtn">
+                        <i class="fas fa-share"></i> Compartilhar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast Notifications -->
+    <div class="toast" id="toast">
+        <div class="toast-content">
+            <i class="toast-icon"></i>
+            <span class="toast-message"></span>
+        </div>
+    </div>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Proteção Anti-DevTools -->
+    <script src="js/protection.js"></script>
+    
+    <!-- Scripts -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/script.js"></script>
+    <script src="js/auth-system.js"></script>
+    <script src="js/advanced-features.js"></script>
+    <script src="js/login-screen.js"></script>
+    <script src="js/notifications-system.js"></script>
+</body>
+</html>
